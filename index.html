@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./niivue.css" />
+  <title>ct2print</title>
+  <script type="module" crossorigin src="./assets/index-DCo9v3ox.js"></script>
+</head>
+
+<body>
+  <header>
+    <label for="volumeSelect">Volume</label>
+    <select id="volumeSelect">
+      <option selected>tinyT1</option>
+      <option>bet</option>
+      <option>Iguana</option>
+      <option>CT_Philips</option>
+      <option>mni152</option>
+      <option>wm.mgz</option>
+      <option>lh.pial</option>
+      <option>fs_LR.32k.L.inflated.surf.gii</option>
+    </select>
+    <label for="shaderSelect">Shader</label>
+    <select id="shaderSelect">
+      <option value="Flat">Flat</option>
+      <option value="Matcap" selected>Matcap</option>
+      <option value="Matte">Matte</option>
+      <option value="Phong">Phong</option>
+    </select>
+    <label for="visibleCheck">Mesh Visible</label>
+    <input type="checkbox" id="visibleCheck" checked />
+    <button id="remeshBtn">Create Mesh</button>
+    <button id="simplifyBtn">Simplify Mesh</button>
+    <button id="saveBtn">Save Mesh</button>
+    <button id="aboutBtn">About</button>
+    <div id="loadingCircle" class="loading-circle hidden"></div>
+  </header>
+  <main id="canvas-container">
+    <canvas id="gl1"></canvas>
+  </main>
+  <footer id="location">&nbsp;</footer>
+  <dialog id="remeshDialog">
+    <form method="dialog">
+      <p>
+        <label id="isoLabel">Isosurface Threshold</label>
+        <input id="isoNumber" type="text" value="100">
+      <p>
+      <p>
+        <label>Closing (mm)</label>
+        <input id="closeMM" type="number" min="0"  value="4" max="100">
+      </p>
+      <p>
+        <label>
+          Hollow:
+          <select id="hollowSelect">
+            <option value="0" selected>False: solid</option>
+            <option value="-1">1mm</option>
+            <option value="-2">2mm</option>
+            <option value="-4">4mm</option>
+            <option value="-8">8mm</option>
+            <option value="-16">16mm</option>
+          </select>
+        </label>
+      </p>
+      <p>
+        <input type="checkbox" id="bubbleCheck" unchecked/>
+        <label>Fill bubbles</label>
+      </p>
+      <p>
+        <input type="checkbox" id="largestCheck" unchecked/>
+        <label>Largest cluster only</label>
+      </p>
+      <p>
+        <label for="smoothSlide">Smoothing</label>
+        <input
+          type="range"
+          min="0"
+          max="20"
+          value="5"
+          class="slider"
+          id="smoothSlide"
+        />
+      </p>
+      <p>
+        <label>Simplify Percent (1..100)</label>
+        <input id="shrinkPct" type="number" min="1"  value="30" max="100">
+      </p>
+      <button id="cancelBtn" formmethod="dialog">Cancel</button>
+      <button autofocus id="applyBtn" value="default">Apply</button>
+    </form>
+  </dialog>
+  <dialog id="simplifyDialog">
+    <form method="dialog">
+      <p>
+        <label>Simplify Percent (1..100)</label>
+        <input id="shrinkSimplePct" type="number" min="1"  value="30" max="100">
+      </p>
+      <button id="cancelBtn" formmethod="dialog">Cancel</button>
+      <button autofocus id="applySimpleBtn" value="default">Apply</button>
+    </form>
+  </dialog>
+  <dialog id="saveDialog">
+    <form method="dialog">
+      <p>
+        <label>
+          Format:
+          <select id="formatSelect">
+            <option>MZ3 small and precise</option>
+            <option selected>OBJ widely supported</option>
+            <option>STL popular for printing</option>
+          </select>
+        </label>
+      </p>
+      <button id="cancelSaveBtn" formmethod="dialog">Cancel</button>
+      <button autofocus id="applySaveBtn" value="default">Save</button>
+    </form>
+  </dialog>
+</body>
+</html>
