@@ -24,7 +24,7 @@ async function main() {
     }
   }
   aboutBtn.onclick = function () {
-    window.open("https://github.com/niivue/niivue-mesh", "_blank")
+    window.open("https://github.com/niivue/ct2print", "_blank")
     }
   volumeSelect.onchange = function () {
     const selectedOption = volumeSelect.options[volumeSelect.selectedIndex]
