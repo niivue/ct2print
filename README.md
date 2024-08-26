@@ -2,6 +2,8 @@
 
 A basic example of converting a voxel-based image to a simplified mesh. This interactive drag-and-drop web page allows you to create meshes that can be used with a 3D printer.
 
+**No data is sent to a server. Everything happens in *your* browser window, on *your* machine.**
+
 ![Example mesh from CT scan of a human header](CTmesh.png)
 
 ### Usage
