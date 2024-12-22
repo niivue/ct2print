@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="./niivue.css" />
   <title>ct2print</title>
-  <script type="module" crossorigin src="./assets/index-BligYLVR.js"></script>
+  <script type="module" crossorigin src="./assets/index-DqUVguxk.js"></script>
 </head>
 
 <body>
@@ -46,6 +46,19 @@
       <p>
         <label id="isoLabel">Isosurface Threshold</label>
         <input id="isoNumber" type="text" value="100">
+      </p>
+      <p>
+        <label>
+          Hollow:
+          <select id="hollowSelect" title="hollow meshes require less material but may be fragile">
+            <option value="0" selected>False: solid</option>
+            <option value="-1">1mm</option>
+            <option value="-2">2mm</option>
+            <option value="-4">4mm</option>
+            <option value="-8">8mm</option>
+            <option value="-16">16mm</option>
+          </select>
+        </label>
       </p>
       <p>
         <label for="smoothSlide">Smoothing</label>
