@@ -1,4 +1,5 @@
-import { Niivue, NVMeshUtilities } from "@niivue/niivue";
+import { Niivue, NVMeshUtilities, NVImage } from "@niivue/niivue";
+import { Niimath } from "@niivue/niimath"
 import {
   cuberille,
   setPipelinesBaseUrl as setCuberillePipelinesUrl,
@@ -31,6 +32,8 @@ setCuberillePipelinesUrl(pipelinesBaseUrl);
 setMeshFiltersPipelinesUrl(pipelinesBaseUrl);
 
 async function main() {
+  const niimath = new Niimath()
+  await niimath.init()
   const loadingCircle = document.getElementById("loadingCircle");
   let startTime = null;
   saveBtn.onclick = function () {
@@ -93,18 +96,41 @@ async function main() {
   };
   applyBtn.onclick = async function () {
     const volIdx = nv1.volumes.length - 1;
+    const isoValue = Number(isoNumber.value);
+    let hdr = nv1.volumes[volIdx].hdr;
+    let img = nv1.volumes[volIdx].img;
+    let hollowInt = Number(hollowSelect.value )
+    if (hollowInt < 0){
+      const vol = nv1.volumes[volIdx]
+      const niiBuffer = await nv1.saveImage({volumeByIndex: nv1.volumes.length - 1}).buffer
+      const niiBlob = new Blob([niiBuffer], { type: 'application/octet-stream' })
+      const niiFile = new File([niiBlob], 'input.nii')
+      // with niimath wasm ZLIB builds, isGz seems to be the default output type:
+      // see: https://github.com/rordenlab/niimath/blob/9f3a301be72c331b90ef5baecb7a0232e9b47ba4/src/core.c#L201
+      // also added new option to set outputDataType in niimath in version 0.3.0 (published 20 Dec 2024)
+      niimath.setOutputDataType('input') // call before setting image since this is passed to the image constructor
+      let image = niimath.image(niiFile)
+      image = image.hollow(isoValue, hollowInt)
+      // must use .gz extension because niimath will create .nii.gz by default, so
+      // wasm file system commands will look for this, not .nii. 
+      // Error 44 will happen otherwise (file not found error)
+      const outBlob = await image.run('output.nii.gz') 
+      let outFile = new File([outBlob], 'hollow.nii.gz')
+      const outVol = await NVImage.loadFromFile({
+        file: outFile,
+        name: outFile.name
+      })
+      hdr = outVol.hdr
+      img = outVol.img
+    }
     loadingCircle.classList.remove("hidden");
     meshProcessingMsg.classList.remove("hidden");
     meshProcessingMsg.textContent = "Generating mesh from segmentation";
-    const hdr = nv1.volumes[volIdx].hdr;
-    const img = nv1.volumes[volIdx].img;
     const itkImage = nii2iwi(hdr, img, false);
     itkImage.size = itkImage.size.map(Number);
-    const isoValue = Number(isoNumber.value);
     console.log(
       `volume ${volIdx} dimensions ${itkImage.size} with iso-value ${isoValue}`
     );
-    console.log(itkImage);
     const { mesh } = await cuberille(itkImage, { isoSurfaceValue: isoValue });
     meshProcessingMsg.textContent = "Generating manifold";
     const { outputMesh: repairedMesh } = await repair(mesh, {
@@ -132,7 +158,8 @@ async function main() {
       newtonIterations: smooth,
       numberPoints: shrink,
     });
-    const niiMesh = iwm2meshCore(smoothedMesh);
+    const { outputMesh: smoothedRepairedMesh } = await repair(smoothedMesh, { maximumHoleArea: 50.0 })
+    const niiMesh = iwm2meshCore(smoothedRepairedMesh)
     loadingCircle.classList.add("hidden");
     meshProcessingMsg.classList.add("hidden");
     while (nv1.meshes.length > 0) {
