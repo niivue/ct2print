@@ -348,7 +348,7 @@ async function main() {
     nv1.setSliceType(nv1.sliceTypeMultiplanar)
     nv1.setPan2Dxyzmm([0, 0, 0, 1])
     console.log(
-      "ct2print 20241218 intensity range " +
+      "ct2print 20241228 intensity range " +
         isoLabel.textContent +
         " threshold " +
         isoNumber.value
