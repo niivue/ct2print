@@ -249,16 +249,20 @@ async function main() {
     itkImage.size = itkImage.size.map(Number)
     const { mesh } = await cuberille(itkImage, { isoSurfaceValue: isoValueRaw })
     meshProcessingMsg.textContent = "Generating manifold"
+    const minimumComponentArea = 1.0
+    const maximumHoleArea = 10.0
     const { outputMesh: repairedMesh } = await repair(mesh, {
-      maximumHoleArea: 50.0,
+      maximumHoleArea,
+      minimumComponentArea,
     })
     let initialMesh = repairedMesh
     if (largestCheck.checked) {
       console.log('Only retaining largest mesh')
       meshProcessingMsg.textContent = "Keep largest mesh component"
-      const { outputMesh: initialMesh } = await keepLargestComponent(
+      const { outputMesh: largestComponentMesh } = await keepLargestComponent(
         repairedMesh
       )
+      initialMesh = largestComponentMesh
     }
     while (nv1.meshes.length > 0) {
       nv1.removeMesh(nv1.meshes[0])
@@ -279,7 +283,7 @@ async function main() {
       newtonIterations: smooth,
       numberPoints: shrink,
     })
-    const { outputMesh: smoothedRepairedMesh } = await repair(smoothedMesh, { maximumHoleArea: 50.0 })
+    const { outputMesh: smoothedRepairedMesh } = await repair(smoothedMesh, { maximumHoleArea, minimumComponentArea })
     const niiMesh = iwm2meshCore(smoothedRepairedMesh)
     loadingCircle.classList.add("hidden")
     meshProcessingMsg.classList.add("hidden")
