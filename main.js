@@ -94,8 +94,6 @@ async function main() {
   qualitySelect.onchange = function () {
     const isBetterQuality = Boolean(Number(qualitySelect.value))
     const opacity = 1.0 - (0.5 * Number(isBetterQuality))
-    largestCheck.disabled = isBetterQuality
-    largestClusterGroup.style.opacity = opacity
     bubbleCheck.disabled = isBetterQuality
     bubbleGroup.style.opacity = opacity
     closeMM.disabled = isBetterQuality
@@ -251,17 +249,25 @@ async function main() {
     itkImage.size = itkImage.size.map(Number)
     const { mesh } = await cuberille(itkImage, { isoSurfaceValue: isoValueRaw })
     meshProcessingMsg.textContent = "Generating manifold"
+    const minimumComponentArea = 1.0
+    const maximumHoleArea = 10.0
     const { outputMesh: repairedMesh } = await repair(mesh, {
-      maximumHoleArea: 50.0,
+      maximumHoleArea,
+      minimumComponentArea,
     })
-    meshProcessingMsg.textContent = "Keep largest mesh component"
-    const { outputMesh: largestOnly } = await keepLargestComponent(
-      repairedMesh
-    )
+    let initialMesh = repairedMesh
+    if (largestCheck.checked) {
+      console.log('Only retaining largest mesh')
+      meshProcessingMsg.textContent = "Keep largest mesh component"
+      const { outputMesh: largestComponentMesh } = await keepLargestComponent(
+        repairedMesh
+      )
+      initialMesh = largestComponentMesh
+    }
     while (nv1.meshes.length > 0) {
       nv1.removeMesh(nv1.meshes[0])
     }
-    const initialNiiMesh = iwm2meshCore(largestOnly)
+    const initialNiiMesh = iwm2meshCore(initialMesh)
     const initialNiiMeshBuffer = NVMeshUtilities.createMZ3(
       initialNiiMesh.positions,
       initialNiiMesh.indices,
@@ -273,11 +279,11 @@ async function main() {
     const smooth = parseInt(smoothSlide.value)
     const shrink = parseFloat(shrinkPct.value)
     console.log(`smoothing iterations ${smooth} shrink percent ${shrink}`)
-    const { outputMesh: smoothedMesh } = await smoothRemesh(largestOnly, {
+    const { outputMesh: smoothedMesh } = await smoothRemesh(initialMesh, {
       newtonIterations: smooth,
       numberPoints: shrink,
     })
-    const { outputMesh: smoothedRepairedMesh } = await repair(smoothedMesh, { maximumHoleArea: 50.0 })
+    const { outputMesh: smoothedRepairedMesh } = await repair(smoothedMesh, { maximumHoleArea, minimumComponentArea })
     const niiMesh = iwm2meshCore(smoothedRepairedMesh)
     loadingCircle.classList.add("hidden")
     meshProcessingMsg.classList.add("hidden")
@@ -342,7 +348,7 @@ async function main() {
     nv1.setSliceType(nv1.sliceTypeMultiplanar)
     nv1.setPan2Dxyzmm([0, 0, 0, 1])
     console.log(
-      "ct2print 20241218 intensity range " +
+      "ct2print 20241228 intensity range " +
         isoLabel.textContent +
         " threshold " +
         isoNumber.value
