@@ -46,6 +46,13 @@ This web page combines three packages developed by our team:
 - [niivue](https://github.com/niivue/niivue) reading images and visualization.
 - [ITK-Wasm](https://github.com/InsightSoftwareConsortium/ITK-Wasm) for voxel-to-mesh and mesh processing. [Citation](https://proceedings.scipy.org/articles/TCFJ5130.
 
+### Data Sources
+
+You can provide your own voxel-based images, but here are a few other sources:
+
+ - [MorphoSource](https://www.morphosource.org/) is a digital repository for 3D data of biological and cultural specimens, supporting open access to scans and models for research, education, and public use.
+ - [DigiMorph](https://www.digimorph.org/) provides high-resolution 2D and 3D visualizations of vertebrate and invertebrate morphology, primarily derived from CT scans, to support comparative anatomy and evolutionary research.
+
 ## Citation
 
   - Rorden C, McCormick M, Hanayik T, Masoud M, Plis SM, ([2025](https://www.nature.com/articles/s41598-025-00014-5?utm_source=rct_congratemailt&utm_medium=email&utm_campaign=oa_20250505&utm_content=10.1038/s41598-025-00014-5)) brain2print AI powered web tool for creating 3D printable brain models. Scientific Reports. 15: 15664. doi:10.1038/s41598-025-00014-5
